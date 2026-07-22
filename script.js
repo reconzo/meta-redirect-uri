@@ -22,21 +22,26 @@ console.log("codeParameter: " + codeParameter)
     // statusElement.textContent = `Code is: ${codeParameter}`
 
     try {
-        const response = await fetch("https://asia-south1-meta-access-token-generator.cloudfunctions.net/generateMetaToken", {
+        const response = await fetch("https://asia-south1-meta-access-token-generator.cloudfunctions.net/meta-oauth-function", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({codeParameter})
+            body: JSON.stringify({code: codeParameter})
         });
 
-        if(!response.ok) throw new Error("Network response was not ok")
-        console.log(response)
         const data = await response.json();
+
+        if (!response.ok) {
+            console.error(`message: `, data.error.error.message);
+            console.error("Error: ", data.error.error)
+            throw new Error("Network response was not ok");
+        }
+        console.log(response)
 
 console.log(data);
 
-        statusElement.textContent = `${data.message} : ${data.longToken}.`
+        statusElement.textContent = `${data.message} : ${data.data.encryptedLongLivedToken}.`
 
     } catch (error) {
         console.error(error);
